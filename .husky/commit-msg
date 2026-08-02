@@ -1,0 +1,25 @@
+#!/bin/sh
+
+COMMIT_MSG=$(cat "$1")
+
+TYPE_PATTERN="feat|fix|docs|refactor|test|chore"
+
+RADAR_PATTERN="radar://[0-9]+"
+
+if ! echo "$COMMIT_MSG" | grep -Eq "^($TYPE_PATTERN): $RADAR_PATTERN .+"
+then
+    echo ""
+    echo "❌ Invalid commit message format"
+    echo ""
+    echo "Required format:"
+    echo "<type>: radar://<number> <description>"
+    echo ""
+    echo "Examples:"
+    echo "feat: radar://2433434 add login page"
+    echo "fix: radar://2433435 fix issue"
+    echo ""
+
+    exit 1
+fi
+
+echo "✅ Commit message accepted"

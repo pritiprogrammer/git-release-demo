@@ -1,0 +1,31 @@
+name: PR Commit Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
+
+      - name: Check commit count
+        run: |
+          COUNT=$(git rev-list --count origin/${{ github.base_ref }}..HEAD)
+
+          echo "Commit count: $COUNT"
+
+          if [ "$COUNT" -ne 1 ]; then
+            echo "❌ PR must contain exactly one commit."
+            exit 1
+          fi
+
+          echo "✅ PR contains exactly one commit."
